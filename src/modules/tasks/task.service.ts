@@ -1,13 +1,18 @@
 import { AppDataSource } from '../../config/data-source';
-import { Task, TaskStatus, TaskPriority } from './task.entity';
+import { Task } from './task.entity';
+import { ITaskRepository } from './task.repository';
 import { Project } from '../projects/project.entity';
+import { IProjectRepository } from '../projects/project.repository';
 import { CreateTaskInput, UpdateTaskInput, TaskQueryParams } from './task.types';
-import { NotFoundError, ForbiddenError, BadRequestError } from '../../common/errors';
+import { ITaskService } from './task.interface';
+import { NotFoundError, ForbiddenError } from '../../common/errors';
 import { getPagination } from '../../common/utils/pagination';
 
-export class TaskService {
-  private taskRepository = AppDataSource.getRepository(Task);
-  private projectRepository = AppDataSource.getRepository(Project);
+export class TaskService implements ITaskService {
+  constructor(
+    private taskRepository: ITaskRepository,
+    private projectRepository: IProjectRepository,
+  ) {}
 
   async create(input: CreateTaskInput, projectId: string, userId: string, isAdmin: boolean): Promise<Task> {
     const project = await this.projectRepository.findOne({
@@ -134,4 +139,6 @@ export class TaskService {
   }
 }
 
-export const taskService = new TaskService();
+const taskRepository = AppDataSource.getRepository(Task);
+const projectRepository = AppDataSource.getRepository(Project);
+export const taskService = new TaskService(taskRepository, projectRepository);

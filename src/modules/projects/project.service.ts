@@ -1,11 +1,13 @@
 import { AppDataSource } from '../../config/data-source';
-import { Project, ProjectStatus } from './project.entity';
+import { Project } from './project.entity';
+import { IProjectRepository } from './project.repository';
 import { CreateProjectInput, UpdateProjectInput, ProjectQueryParams } from './project.types';
+import { IProjectService } from './project.interface';
 import { NotFoundError, ForbiddenError } from '../../common/errors';
 import { getPagination } from '../../common/utils/pagination';
 
-export class ProjectService {
-  private projectRepository = AppDataSource.getRepository(Project);
+export class ProjectService implements IProjectService {
+  constructor(private projectRepository: IProjectRepository) {}
 
   async create(input: CreateProjectInput, ownerId: string): Promise<Project> {
     const project = this.projectRepository.create({
@@ -71,4 +73,5 @@ export class ProjectService {
   }
 }
 
-export const projectService = new ProjectService();
+const projectRepository = AppDataSource.getRepository(Project);
+export const projectService = new ProjectService(projectRepository);

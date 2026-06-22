@@ -1,13 +1,14 @@
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 import { AppDataSource } from '../../config/data-source';
 import { User } from '../users/user.entity';
-import { RegisterInput, LoginInput, AuthResponse, JwtPayload } from './auth.types';
-import { env } from '../../config/env';
+import { IUserRepository } from '../users/user.repository';
+import { RegisterInput, LoginInput, AuthResponse } from './auth.types';
+import { IAuthService } from './auth.interface';
+import { jwtUtil } from '../../common/utils/jwt';
 import { BadRequestError, UnauthorizedError, NotFoundError } from '../../common/errors';
 
-export class AuthService {
-  private userRepository = AppDataSource.getRepository(User);
+export class AuthService implements IAuthService {
+  constructor(private userRepository: IUserRepository) {}
 
   async register(input: RegisterInput): Promise<AuthResponse> {
     const existingUser = await this.userRepository.findOne({
@@ -28,7 +29,11 @@ export class AuthService {
 
     const savedUser = await this.userRepository.save(user);
 
-    const token = this.generateToken(savedUser);
+    const token = jwtUtil.generateToken({
+      userId: savedUser.id,
+      email: savedUser.email,
+      role: savedUser.role,
+    });
 
     const { password: _, ...userWithoutPassword } = savedUser as User & { password: string };
 
@@ -52,7 +57,11 @@ export class AuthService {
       throw new UnauthorizedError('Invalid email or password');
     }
 
-    const token = this.generateToken(user);
+    const token = jwtUtil.generateToken({
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+    });
 
     const { password: _, ...userWithoutPassword } = user;
 
@@ -70,18 +79,7 @@ export class AuthService {
 
     return user;
   }
-
-  private generateToken(user: User): string {
-    const payload: JwtPayload = {
-      userId: user.id,
-      email: user.email,
-      role: user.role,
-    };
-
-    return jwt.sign(payload, env.JWT_SECRET, {
-      expiresIn: env.JWT_EXPIRES_IN,
-    });
-  }
 }
 
-export const authService = new AuthService();
+const userRepository = AppDataSource.getRepository(User);
+export const authService = new AuthService(userRepository);
