@@ -1,5 +1,10 @@
 import { Response } from 'express';
 
+export interface ValidationError {
+  field?: string;
+  message: string;
+}
+
 export interface SuccessResponse<T> {
   success: true;
   data: T;
@@ -8,7 +13,7 @@ export interface SuccessResponse<T> {
 export interface ErrorResponse {
   success: false;
   message: string;
-  errors?: any[];
+  errors?: ValidationError[];
 }
 
 export interface PaginatedResponse<T> {
@@ -27,7 +32,7 @@ export const sendSuccess = <T>(res: Response, data: T, statusCode = 200): void =
   res.status(statusCode).json(response);
 };
 
-export const sendError = (res: Response, message: string, statusCode = 500, errors?: any[]): void => {
+export const sendError = (res: Response, message: string, statusCode = 500, errors?: ValidationError[]): void => {
   const response: ErrorResponse = { success: false, message, errors };
   res.status(statusCode).json(response);
 };

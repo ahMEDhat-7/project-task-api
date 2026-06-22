@@ -1,10 +1,13 @@
 import { TaskService } from '../task.service';
 import { Task, TaskStatus, TaskPriority } from '../task.entity';
+import { ITaskRepository } from '../task.repository';
+import { IProjectRepository } from '../../projects/project.repository';
+import { Project } from '../../projects/project.entity';
 
 describe('TaskService', () => {
   let taskService: TaskService;
-  let mockTaskRepository: any;
-  let mockProjectRepository: any;
+  let mockTaskRepository: jest.Mocked<ITaskRepository>;
+  let mockProjectRepository: jest.Mocked<IProjectRepository>;
 
   beforeEach(() => {
     mockTaskRepository = {
@@ -17,6 +20,10 @@ describe('TaskService', () => {
 
     mockProjectRepository = {
       findOne: jest.fn(),
+      create: jest.fn(),
+      save: jest.fn(),
+      softRemove: jest.fn(),
+      createQueryBuilder: jest.fn(),
     };
 
     taskService = new TaskService(mockTaskRepository, mockProjectRepository);
@@ -31,8 +38,8 @@ describe('TaskService', () => {
       const input = { title: 'Test Task', description: 'Test description' };
       const projectId = 'project-uuid';
       const userId = 'user-uuid';
-      const project = { id: projectId, ownerId: userId };
-      const task = { id: 'task-uuid', ...input, projectId, status: TaskStatus.PENDING, priority: TaskPriority.MEDIUM };
+      const project = { id: projectId, ownerId: userId } as Project;
+      const task = { id: 'task-uuid', ...input, projectId, status: TaskStatus.PENDING, priority: TaskPriority.MEDIUM } as Task;
 
       mockProjectRepository.findOne.mockResolvedValue(project);
       mockTaskRepository.create.mockReturnValue(task);
@@ -52,7 +59,7 @@ describe('TaskService', () => {
     });
 
     it('should throw error if user is not owner and not admin', async () => {
-      const project = { id: 'project-uuid', ownerId: 'other-user' };
+      const project = { id: 'project-uuid', ownerId: 'other-user' } as Project;
       mockProjectRepository.findOne.mockResolvedValue(project);
 
       await expect(
@@ -63,7 +70,7 @@ describe('TaskService', () => {
 
   describe('findById', () => {
     it('should return task if found', async () => {
-      const task = { id: 'task-uuid', title: 'Test Task' };
+      const task = { id: 'task-uuid', title: 'Test Task' } as Task;
       mockTaskRepository.findOne.mockResolvedValue(task);
 
       const result = await taskService.findById('task-uuid');

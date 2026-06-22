@@ -1,5 +1,6 @@
 import { AuthService } from '../auth.service';
 import { User, UserRole } from '../../users/user.entity';
+import { IUserRepository } from '../../users/user.repository';
 import bcrypt from 'bcrypt';
 import { jwtUtil } from '../../../common/utils/jwt';
 
@@ -13,7 +14,7 @@ jest.mock('bcrypt');
 
 describe('AuthService', () => {
   let authService: AuthService;
-  let mockUserRepository: any;
+  let mockUserRepository: jest.Mocked<IUserRepository>;
 
   beforeEach(() => {
     mockUserRepository = {
@@ -52,7 +53,7 @@ describe('AuthService', () => {
 
     it('should throw error if email already exists', async () => {
       const input = { name: 'Test User', email: 'existing@example.com', password: 'password123' };
-      mockUserRepository.findOne.mockResolvedValue({ id: 'existing-user' });
+      mockUserRepository.findOne.mockResolvedValue({ id: 'existing-user' } as User);
 
       await expect(authService.register(input)).rejects.toThrow('Email already exists');
     });
@@ -68,7 +69,9 @@ describe('AuthService', () => {
         where: jest.fn().mockReturnThis(),
         getOne: jest.fn().mockResolvedValue(user),
       };
-      mockUserRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
+      mockUserRepository.createQueryBuilder.mockReturnValue(
+        mockQueryBuilder as ReturnType<IUserRepository['createQueryBuilder']>,
+      );
 
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
       (jwtUtil.generateToken as jest.Mock).mockReturnValue('mock-token');
@@ -85,7 +88,7 @@ describe('AuthService', () => {
         addSelect: jest.fn().mockReturnThis(),
         where: jest.fn().mockReturnThis(),
         getOne: jest.fn().mockResolvedValue(null),
-      });
+      } as ReturnType<IUserRepository['createQueryBuilder']>);
 
       await expect(authService.login(input)).rejects.toThrow('Invalid email or password');
     });

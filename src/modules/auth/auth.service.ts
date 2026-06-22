@@ -37,7 +37,7 @@ export class AuthService implements IAuthService {
 
     const { password: _, ...userWithoutPassword } = savedUser as User & { password: string };
 
-    return { user: userWithoutPassword as any, token };
+    return { user: userWithoutPassword as Omit<User, 'password'>, token };
   }
 
   async login(input: LoginInput): Promise<AuthResponse> {
@@ -65,7 +65,7 @@ export class AuthService implements IAuthService {
 
     const { password: _, ...userWithoutPassword } = user;
 
-    return { user: userWithoutPassword as any, token };
+    return { user: userWithoutPassword as Omit<User, 'password'>, token };
   }
 
   async getProfile(userId: string): Promise<Omit<User, 'password'>> {

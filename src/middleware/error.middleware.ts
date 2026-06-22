@@ -7,6 +7,11 @@ import { sendError } from '../common/utils/response';
 import { logger } from '../common/utils/logger';
 import { env } from '../config/env';
 
+interface PgDriverError {
+  code: string;
+  detail?: string;
+}
+
 export const errorHandler = (err: Error, _req: Request, res: Response, _next: NextFunction): void => {
   if (err instanceof AppError) {
     sendError(res, err.message, err.statusCode);
@@ -33,7 +38,7 @@ export const errorHandler = (err: Error, _req: Request, res: Response, _next: Ne
   }
 
   if (err instanceof QueryFailedError) {
-    const driverError = err.driverError as any;
+    const driverError = err.driverError as PgDriverError;
 
     if (driverError.code === '23505') {
       const detail = driverError.detail || 'Unique constraint violation';

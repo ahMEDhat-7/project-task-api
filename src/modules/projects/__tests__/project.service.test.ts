@@ -1,9 +1,10 @@
 import { ProjectService } from '../project.service';
 import { Project, ProjectStatus } from '../project.entity';
+import { IProjectRepository } from '../project.repository';
 
 describe('ProjectService', () => {
   let projectService: ProjectService;
-  let mockProjectRepository: any;
+  let mockProjectRepository: jest.Mocked<IProjectRepository>;
 
   beforeEach(() => {
     mockProjectRepository = {
@@ -41,7 +42,7 @@ describe('ProjectService', () => {
     it('should return project if owner matches', async () => {
       const projectId = 'project-uuid';
       const userId = 'user-uuid';
-      const project = { id: projectId, ownerId: userId };
+      const project = { id: projectId, ownerId: userId } as Project;
 
       mockProjectRepository.findOne.mockResolvedValue(project);
 
@@ -59,7 +60,7 @@ describe('ProjectService', () => {
     });
 
     it('should throw error if user is not owner and not admin', async () => {
-      const project = { id: 'project-uuid', ownerId: 'other-user' };
+      const project = { id: 'project-uuid', ownerId: 'other-user' } as Project;
       mockProjectRepository.findOne.mockResolvedValue(project);
 
       await expect(projectService.findById('project-uuid', 'user-uuid', false)).rejects.toThrow(
@@ -68,7 +69,7 @@ describe('ProjectService', () => {
     });
 
     it('should allow admin to access any project', async () => {
-      const project = { id: 'project-uuid', ownerId: 'other-user' };
+      const project = { id: 'project-uuid', ownerId: 'other-user' } as Project;
       mockProjectRepository.findOne.mockResolvedValue(project);
 
       const result = await projectService.findById('project-uuid', 'admin-uuid', true);
