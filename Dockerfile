@@ -1,0 +1,34 @@
+FROM node:24-alpine AS builder
+
+WORKDIR /app
+
+COPY package.json pnpm-lock.yaml ./
+
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+RUN pnpm install --frozen-lockfile
+
+COPY . .
+
+RUN pnpm build
+
+FROM node:24-alpine AS production
+
+WORKDIR /app
+
+COPY package.json pnpm-lock.yaml ./
+
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+RUN pnpm install --prod --frozen-lockfile
+
+COPY --from=builder /app/dist ./dist
+
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodeuser -u 1001
+
+USER nodeuser
+
+EXPOSE 3000
+
+CMD ["node", "dist/server.js"]
