@@ -4,8 +4,6 @@ import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import swaggerUi from 'swagger-ui-express';
-import { env } from './config/env';
-import { logger } from './common/utils/logger';
 import { errorHandler } from './middleware/error.middleware';
 import { swaggerSpec } from './docs/swagger';
 import { registerRoutes } from './routes';

@@ -11,7 +11,7 @@ const consoleFormat = winston.format.combine(
   winston.format.colorize(),
   winston.format.timestamp({ format: 'HH:mm:ss' }),
   winston.format.printf(({ timestamp, level, message, stack }) => {
-    return `${timestamp} [${level}]: ${stack || message}`;
+    return `${timestamp as string} [${level as string}]: ${(stack || message) as string}`;
   }),
 );
 
