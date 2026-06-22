@@ -22,7 +22,7 @@ describe('AuthService', () => {
       create: jest.fn(),
       save: jest.fn(),
       createQueryBuilder: jest.fn(),
-    };
+    } as jest.Mocked<IUserRepository>;
 
     authService = new AuthService(mockUserRepository);
   });
@@ -35,7 +35,15 @@ describe('AuthService', () => {
     it('should register a new user successfully', async () => {
       const input = { name: 'Test User', email: 'test@example.com', password: 'password123' };
       const hashedPassword = 'hashedPassword';
-      const savedUser = { id: 'uuid-1', ...input, password: hashedPassword, role: UserRole.MEMBER };
+      const savedUser = {
+        id: 'uuid-1',
+        ...input,
+        password: hashedPassword,
+        role: UserRole.MEMBER,
+        projects: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      } as User;
 
       mockUserRepository.findOne.mockResolvedValue(null);
       mockUserRepository.create.mockReturnValue(savedUser);
@@ -62,7 +70,12 @@ describe('AuthService', () => {
   describe('login', () => {
     it('should login successfully with valid credentials', async () => {
       const input = { email: 'test@example.com', password: 'password123' };
-      const user = { id: 'uuid-1', email: input.email, password: 'hashedPassword', role: UserRole.MEMBER };
+      const user = {
+        id: 'uuid-1',
+        email: input.email,
+        password: 'hashedPassword',
+        role: UserRole.MEMBER,
+      } as User;
 
       const mockQueryBuilder = {
         addSelect: jest.fn().mockReturnThis(),
@@ -70,7 +83,7 @@ describe('AuthService', () => {
         getOne: jest.fn().mockResolvedValue(user),
       };
       mockUserRepository.createQueryBuilder.mockReturnValue(
-        mockQueryBuilder as ReturnType<IUserRepository['createQueryBuilder']>,
+        mockQueryBuilder as unknown as ReturnType<IUserRepository['createQueryBuilder']>,
       );
 
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
@@ -88,7 +101,7 @@ describe('AuthService', () => {
         addSelect: jest.fn().mockReturnThis(),
         where: jest.fn().mockReturnThis(),
         getOne: jest.fn().mockResolvedValue(null),
-      } as ReturnType<IUserRepository['createQueryBuilder']>);
+      } as unknown as ReturnType<IUserRepository['createQueryBuilder']>);
 
       await expect(authService.login(input)).rejects.toThrow('Invalid email or password');
     });

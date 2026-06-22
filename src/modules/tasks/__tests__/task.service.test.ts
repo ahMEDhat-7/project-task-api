@@ -16,7 +16,7 @@ describe('TaskService', () => {
       save: jest.fn(),
       remove: jest.fn(),
       createQueryBuilder: jest.fn(),
-    };
+    } as jest.Mocked<ITaskRepository>;
 
     mockProjectRepository = {
       findOne: jest.fn(),
@@ -24,7 +24,7 @@ describe('TaskService', () => {
       save: jest.fn(),
       softRemove: jest.fn(),
       createQueryBuilder: jest.fn(),
-    };
+    } as jest.Mocked<IProjectRepository>;
 
     taskService = new TaskService(mockTaskRepository, mockProjectRepository);
   });
@@ -39,7 +39,17 @@ describe('TaskService', () => {
       const projectId = 'project-uuid';
       const userId = 'user-uuid';
       const project = { id: projectId, ownerId: userId } as Project;
-      const task = { id: 'task-uuid', ...input, projectId, status: TaskStatus.PENDING, priority: TaskPriority.MEDIUM } as Task;
+      const task = {
+        id: 'task-uuid',
+        ...input,
+        projectId,
+        status: TaskStatus.PENDING,
+        priority: TaskPriority.MEDIUM,
+        dueDate: new Date(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        project: {} as never,
+      } as Task;
 
       mockProjectRepository.findOne.mockResolvedValue(project);
       mockTaskRepository.create.mockReturnValue(task);

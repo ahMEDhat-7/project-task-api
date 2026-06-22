@@ -13,7 +13,7 @@ describe('ProjectService', () => {
       save: jest.fn(),
       softRemove: jest.fn(),
       createQueryBuilder: jest.fn(),
-    };
+    } as jest.Mocked<IProjectRepository>;
 
     projectService = new ProjectService(mockProjectRepository);
   });
@@ -26,7 +26,17 @@ describe('ProjectService', () => {
     it('should create a project successfully', async () => {
       const input = { title: 'Test Project', description: 'Test description' };
       const userId = 'user-uuid';
-      const project = { id: 'project-uuid', ...input, ownerId: userId, status: ProjectStatus.ACTIVE };
+      const project = {
+        id: 'project-uuid',
+        ...input,
+        ownerId: userId,
+        status: ProjectStatus.ACTIVE,
+        owner: {} as never,
+        tasks: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      } as unknown as Project;
 
       mockProjectRepository.create.mockReturnValue(project);
       mockProjectRepository.save.mockResolvedValue(project);
