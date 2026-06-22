@@ -1,0 +1,37 @@
+{
+  "name": "project-task-api",
+  "version": "1.0.0",
+  "description": "Project & Task Management API",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "format": "prettier --write src/**/*.ts",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "migration:generate": "typeorm migration:generate -d src/config/data-source.ts",
+    "migration:run": "typeorm migration:run -d src/config/data-source.ts",
+    "migration:revert": "typeorm migration:revert -d src/config/data-source.ts",
+    "seed": "ts-node src/database/seeds/seed.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ahMEDhat-7/project-task-api.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ahMEDhat-7/project-task-api/issues"
+  },
+  "homepage": "https://github.com/ahMEDhat-7/project-task-api#readme",
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "reflect-metadata": "^0.2.2"
+  }
+}
