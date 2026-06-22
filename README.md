@@ -17,7 +17,7 @@ A secure RESTful API for managing projects and tasks with user authentication an
 ## Prerequisites
 
 - Node.js 24+
-- PostgreSQL 16+
+- PostgreSQL 18+
 - pnpm (package manager)
 
 ## Installation

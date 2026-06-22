@@ -3,6 +3,7 @@ import { authController } from './auth.controller';
 import { authenticate } from '../../middleware/auth.middleware';
 import { validate } from '../../middleware/validate.middleware';
 import { registerSchema, loginSchema } from '../../common/validators/auth.validator';
+import { asyncWrapper } from '../../common/utils/asyncWrapper';
 
 const router = Router();
 
@@ -34,7 +35,7 @@ const router = Router();
  *       400:
  *         description: Validation error or email already exists
  */
-router.post('/register', validate(registerSchema), (req, res, next) => authController.register(req, res, next));
+router.post('/register', validate(registerSchema), asyncWrapper(authController.register));
 
 /**
  * @swagger
@@ -61,7 +62,7 @@ router.post('/register', validate(registerSchema), (req, res, next) => authContr
  *       401:
  *         description: Invalid credentials
  */
-router.post('/login', validate(loginSchema), (req, res, next) => authController.login(req, res, next));
+router.post('/login', validate(loginSchema), asyncWrapper(authController.login));
 
 /**
  * @swagger
@@ -77,6 +78,6 @@ router.post('/login', validate(loginSchema), (req, res, next) => authController.
  *       401:
  *         description: Unauthorized
  */
-router.get('/me', authenticate, (req, res, next) => authController.getProfile(req, res, next));
+router.get('/me', authenticate, asyncWrapper(authController.getProfile));
 
 export { router as authRoutes };

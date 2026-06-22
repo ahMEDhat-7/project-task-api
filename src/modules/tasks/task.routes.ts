@@ -3,6 +3,7 @@ import { taskController } from './task.controller';
 import { authenticate } from '../../middleware/auth.middleware';
 import { validate } from '../../middleware/validate.middleware';
 import { createTaskSchema, updateTaskSchema } from '../../common/validators/task.validator';
+import { asyncWrapper } from '../../common/utils/asyncWrapper';
 
 const router = Router();
 
@@ -44,7 +45,7 @@ router.use(authenticate);
  *       200:
  *         description: List of tasks
  */
-router.get('/tasks', (req, res, next) => taskController.findAll(req, res, next));
+router.get('/tasks', asyncWrapper(taskController.findAll));
 
 /**
  * @swagger
@@ -67,7 +68,7 @@ router.get('/tasks', (req, res, next) => taskController.findAll(req, res, next))
  *       404:
  *         description: Task not found
  */
-router.get('/tasks/:id', (req, res, next) => taskController.findById(req, res, next));
+router.get('/tasks/:id', asyncWrapper(taskController.findById));
 
 /**
  * @swagger
@@ -110,7 +111,7 @@ router.get('/tasks/:id', (req, res, next) => taskController.findById(req, res, n
  *       404:
  *         description: Task not found
  */
-router.put('/tasks/:id', validate(updateTaskSchema), (req, res, next) => taskController.update(req, res, next));
+router.put('/tasks/:id', validate(updateTaskSchema), asyncWrapper(taskController.update));
 
 /**
  * @swagger
@@ -133,7 +134,7 @@ router.put('/tasks/:id', validate(updateTaskSchema), (req, res, next) => taskCon
  *       404:
  *         description: Task not found
  */
-router.delete('/tasks/:id', (req, res, next) => taskController.delete(req, res, next));
+router.delete('/tasks/:id', asyncWrapper(taskController.delete));
 
 /**
  * @swagger
@@ -177,7 +178,7 @@ router.delete('/tasks/:id', (req, res, next) => taskController.delete(req, res, 
  *       404:
  *         description: Project not found
  */
-router.post('/projects/:projectId/tasks', validate(createTaskSchema), (req, res, next) => taskController.create(req, res, next));
+router.post('/projects/:projectId/tasks', validate(createTaskSchema), asyncWrapper(taskController.create));
 
 /**
  * @swagger
@@ -218,6 +219,6 @@ router.post('/projects/:projectId/tasks', validate(createTaskSchema), (req, res,
  *       404:
  *         description: Project not found
  */
-router.get('/projects/:projectId/tasks', (req, res, next) => taskController.findByProject(req, res, next));
+router.get('/projects/:projectId/tasks', asyncWrapper(taskController.findByProject));
 
 export { router as taskRoutes };

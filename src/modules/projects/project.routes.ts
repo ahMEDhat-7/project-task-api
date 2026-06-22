@@ -3,6 +3,7 @@ import { projectController } from './project.controller';
 import { authenticate } from '../../middleware/auth.middleware';
 import { validate } from '../../middleware/validate.middleware';
 import { createProjectSchema, updateProjectSchema } from '../../common/validators/project.validator';
+import { asyncWrapper } from '../../common/utils/asyncWrapper';
 
 const router = Router();
 
@@ -37,7 +38,7 @@ router.use(authenticate);
  *       400:
  *         description: Validation error
  */
-router.post('/', validate(createProjectSchema), (req, res, next) => projectController.create(req, res, next));
+router.post('/', validate(createProjectSchema), asyncWrapper(projectController.create));
 
 /**
  * @swagger
@@ -73,7 +74,7 @@ router.post('/', validate(createProjectSchema), (req, res, next) => projectContr
  *       200:
  *         description: List of projects
  */
-router.get('/', (req, res, next) => projectController.findAll(req, res, next));
+router.get('/', asyncWrapper(projectController.findAll));
 
 /**
  * @swagger
@@ -96,7 +97,7 @@ router.get('/', (req, res, next) => projectController.findAll(req, res, next));
  *       404:
  *         description: Project not found
  */
-router.get('/:id', (req, res, next) => projectController.findById(req, res, next));
+router.get('/:id', asyncWrapper(projectController.findById));
 
 /**
  * @swagger
@@ -133,7 +134,7 @@ router.get('/:id', (req, res, next) => projectController.findById(req, res, next
  *       404:
  *         description: Project not found
  */
-router.put('/:id', validate(updateProjectSchema), (req, res, next) => projectController.update(req, res, next));
+router.put('/:id', validate(updateProjectSchema), asyncWrapper(projectController.update));
 
 /**
  * @swagger
@@ -156,6 +157,6 @@ router.put('/:id', validate(updateProjectSchema), (req, res, next) => projectCon
  *       404:
  *         description: Project not found
  */
-router.delete('/:id', (req, res, next) => projectController.delete(req, res, next));
+router.delete('/:id', asyncWrapper(projectController.delete));
 
 export { router as projectRoutes };
