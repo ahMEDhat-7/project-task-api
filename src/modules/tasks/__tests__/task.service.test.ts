@@ -1,13 +1,5 @@
 import { TaskService } from '../task.service';
-import { AppDataSource } from '../../../config/data-source';
 import { Task, TaskStatus, TaskPriority } from '../task.entity';
-import { Project } from '../../projects/project.entity';
-
-jest.mock('../../../config/data-source', () => ({
-  AppDataSource: {
-    getRepository: jest.fn(),
-  },
-}));
 
 describe('TaskService', () => {
   let taskService: TaskService;
@@ -27,12 +19,7 @@ describe('TaskService', () => {
       findOne: jest.fn(),
     };
 
-    (AppDataSource.getRepository as jest.Mock).mockImplementation((entity: any) => {
-      if (entity === Project) return mockProjectRepository;
-      return mockTaskRepository;
-    });
-
-    taskService = new TaskService();
+    taskService = new TaskService(mockTaskRepository, mockProjectRepository);
   });
 
   afterEach(() => {

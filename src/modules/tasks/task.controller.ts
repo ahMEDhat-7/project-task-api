@@ -1,11 +1,12 @@
 import { Request, Response } from 'express';
 import { ITaskService } from './task.interface';
 import { sendSuccess, sendPaginated } from '../../common/utils/response';
+import { TaskQueryParams } from './task.types';
 
 export class TaskController {
   constructor(private taskService: ITaskService) {}
 
-  async create(req: Request, res: Response): Promise<void> {
+  create = async (req: Request, res: Response): Promise<void> => {
     const userId = req.user?.userId;
     const isAdmin = req.user?.role === 'admin';
     if (!userId) {
@@ -14,43 +15,43 @@ export class TaskController {
     const { projectId } = req.params;
     const task = await this.taskService.create(req.body, projectId, userId, isAdmin);
     sendSuccess(res, task, 201);
-  }
+  };
 
-  async findByProject(req: Request, res: Response): Promise<void> {
+  findByProject = async (req: Request, res: Response): Promise<void> => {
     const userId = req.user?.userId;
     const isAdmin = req.user?.role === 'admin';
     if (!userId) {
       throw new Error('User not authenticated');
     }
     const { projectId } = req.params;
-    const result = await this.taskService.findByProject(projectId, req.query as any, userId, isAdmin);
+    const result = await this.taskService.findByProject(projectId, req.query as TaskQueryParams, userId, isAdmin);
     sendPaginated(res, result.data, result.page, result.limit, result.total);
-  }
+  };
 
-  async findById(req: Request, res: Response): Promise<void> {
+  findById = async (req: Request, res: Response): Promise<void> => {
     const task = await this.taskService.findById(req.params.id);
     sendSuccess(res, task);
-  }
+  };
 
-  async findAll(req: Request, res: Response): Promise<void> {
+  findAll = async (req: Request, res: Response): Promise<void> => {
     const userId = req.user?.userId;
     const isAdmin = req.user?.role === 'admin';
     if (!userId) {
       throw new Error('User not authenticated');
     }
-    const result = await this.taskService.findAll(req.query as any, userId, isAdmin);
+    const result = await this.taskService.findAll(req.query as TaskQueryParams, userId, isAdmin);
     sendPaginated(res, result.data, result.page, result.limit, result.total);
-  }
+  };
 
-  async update(req: Request, res: Response): Promise<void> {
+  update = async (req: Request, res: Response): Promise<void> => {
     const task = await this.taskService.update(req.params.id, req.body);
     sendSuccess(res, task);
-  }
+  };
 
-  async delete(req: Request, res: Response): Promise<void> {
+  delete = async (req: Request, res: Response): Promise<void> => {
     await this.taskService.delete(req.params.id);
     sendSuccess(res, { message: 'Task deleted successfully' });
-  }
+  };
 }
 
 import { taskService } from './task.service';

@@ -1,12 +1,5 @@
 import { ProjectService } from '../project.service';
-import { AppDataSource } from '../../../config/data-source';
 import { Project, ProjectStatus } from '../project.entity';
-
-jest.mock('../../../config/data-source', () => ({
-  AppDataSource: {
-    getRepository: jest.fn(),
-  },
-}));
 
 describe('ProjectService', () => {
   let projectService: ProjectService;
@@ -21,8 +14,7 @@ describe('ProjectService', () => {
       createQueryBuilder: jest.fn(),
     };
 
-    (AppDataSource.getRepository as jest.Mock).mockReturnValue(mockProjectRepository);
-    projectService = new ProjectService();
+    projectService = new ProjectService(mockProjectRepository);
   });
 
   afterEach(() => {

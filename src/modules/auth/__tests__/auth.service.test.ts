@@ -1,17 +1,15 @@
 import { AuthService } from '../auth.service';
-import { AppDataSource } from '../../../config/data-source';
 import { User, UserRole } from '../../users/user.entity';
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
+import { jwtUtil } from '../../../common/utils/jwt';
 
-jest.mock('../../../config/data-source', () => ({
-  AppDataSource: {
-    getRepository: jest.fn(),
+jest.mock('../../../common/utils/jwt', () => ({
+  jwtUtil: {
+    generateToken: jest.fn(),
   },
 }));
 
 jest.mock('bcrypt');
-jest.mock('jsonwebtoken');
 
 describe('AuthService', () => {
   let authService: AuthService;
@@ -25,8 +23,7 @@ describe('AuthService', () => {
       createQueryBuilder: jest.fn(),
     };
 
-    (AppDataSource.getRepository as jest.Mock).mockReturnValue(mockUserRepository);
-    authService = new AuthService();
+    authService = new AuthService(mockUserRepository);
   });
 
   afterEach(() => {
@@ -43,7 +40,7 @@ describe('AuthService', () => {
       mockUserRepository.create.mockReturnValue(savedUser);
       mockUserRepository.save.mockResolvedValue(savedUser);
       (bcrypt.hash as jest.Mock).mockResolvedValue(hashedPassword);
-      (jwt.sign as jest.Mock).mockReturnValue('mock-token');
+      (jwtUtil.generateToken as jest.Mock).mockReturnValue('mock-token');
 
       const result = await authService.register(input);
 
@@ -74,7 +71,7 @@ describe('AuthService', () => {
       mockUserRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
 
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
-      (jwt.sign as jest.Mock).mockReturnValue('mock-token');
+      (jwtUtil.generateToken as jest.Mock).mockReturnValue('mock-token');
 
       const result = await authService.login(input);
 
