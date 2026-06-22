@@ -1,7 +1,8 @@
 import { z } from 'zod';
+import { MAX_TITLE_LENGTH } from '../constants/validation';
 
 export const createTaskSchema = z.object({
-  title: z.string().min(1, 'Title is required').max(255),
+  title: z.string().min(1, 'Title is required').max(MAX_TITLE_LENGTH),
   description: z.string().optional(),
   status: z.enum(['pending', 'in_progress', 'done']).optional(),
   priority: z.enum(['low', 'medium', 'high']).optional(),
@@ -9,7 +10,7 @@ export const createTaskSchema = z.object({
 });
 
 export const updateTaskSchema = z.object({
-  title: z.string().min(1, 'Title is required').max(255).optional(),
+  title: z.string().min(1, 'Title is required').max(MAX_TITLE_LENGTH).optional(),
   description: z.string().optional(),
   status: z.enum(['pending', 'in_progress', 'done']).optional(),
   priority: z.enum(['low', 'medium', 'high']).optional(),

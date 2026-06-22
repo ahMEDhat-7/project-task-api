@@ -1,4 +1,5 @@
 import { AppDataSource } from '../../config/data-source';
+import { env } from '../../config/env';
 import { User, UserRole } from '../../modules/users/user.entity';
 import { Project, ProjectStatus } from '../../modules/projects/project.entity';
 import { Task, TaskStatus, TaskPriority } from '../../modules/tasks/task.entity';
@@ -18,20 +19,20 @@ const seed = async (): Promise<void> => {
   await userRepository.delete({});
 
   // Create admin user
-  const hashedPassword = await bcrypt.hash('admin123', 10);
+  const hashedPassword = await bcrypt.hash(env.SEED_ADMIN_PASSWORD, env.BCRYPT_SALT_ROUNDS);
   const admin = userRepository.create({
     name: 'Admin User',
-    email: 'admin@example.com',
+    email: env.SEED_ADMIN_EMAIL,
     password: hashedPassword,
     role: UserRole.ADMIN,
   });
   await userRepository.save(admin);
 
   // Create regular user
-  const userPassword = await bcrypt.hash('user123', 10);
+  const userPassword = await bcrypt.hash(env.SEED_USER_PASSWORD, env.BCRYPT_SALT_ROUNDS);
   const user = userRepository.create({
     name: 'Regular User',
-    email: 'user@example.com',
+    email: env.SEED_USER_EMAIL,
     password: userPassword,
     role: UserRole.MEMBER,
   });
@@ -94,8 +95,8 @@ const seed = async (): Promise<void> => {
   }
 
   console.log('Seed completed successfully!');
-  console.log('Admin: admin@example.com / admin123');
-  console.log('User: user@example.com / user123');
+  console.log(`Admin: ${env.SEED_ADMIN_EMAIL} / ${env.SEED_ADMIN_PASSWORD}`);
+  console.log(`User: ${env.SEED_USER_EMAIL} / ${env.SEED_USER_PASSWORD}`);
 
   await AppDataSource.destroy();
 };

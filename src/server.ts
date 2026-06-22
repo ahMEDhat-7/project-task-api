@@ -10,7 +10,7 @@ const startServer = async (): Promise<void> => {
 
     app.listen(env.PORT, () => {
       logger.info(`Server running on port ${env.PORT}`);
-      logger.info(`API documentation available at http://localhost:${env.PORT}/docs`);
+      logger.info(`API documentation available at ${env.APP_URL}:${env.PORT}${env.DOCS_PATH}`);
     });
   } catch (error) {
     logger.error('Failed to start server:', error);

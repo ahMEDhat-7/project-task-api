@@ -12,6 +12,9 @@ interface PgDriverError {
   detail?: string;
 }
 
+const PG_UNIQUE_VIOLATION = '23505';
+const PG_FOREIGN_KEY_VIOLATION = '23503';
+
 export const errorHandler = (err: Error, _req: Request, res: Response, _next: NextFunction): void => {
   if (err instanceof AppError) {
     sendError(res, err.message, err.statusCode);
@@ -40,13 +43,13 @@ export const errorHandler = (err: Error, _req: Request, res: Response, _next: Ne
   if (err instanceof QueryFailedError) {
     const driverError = err.driverError as PgDriverError;
 
-    if (driverError.code === '23505') {
+    if (driverError.code === PG_UNIQUE_VIOLATION) {
       const detail = driverError.detail || 'Unique constraint violation';
       sendError(res, detail, 409);
       return;
     }
 
-    if (driverError.code === '23503') {
+    if (driverError.code === PG_FOREIGN_KEY_VIOLATION) {
       sendError(res, 'Referenced record not found', 400);
       return;
     }

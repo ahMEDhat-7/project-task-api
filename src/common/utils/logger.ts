@@ -18,10 +18,10 @@ const consoleFormat = winston.format.combine(
 export const logger = winston.createLogger({
   level: env.NODE_ENV === 'production' ? 'info' : 'debug',
   format: logFormat,
-  defaultMeta: { service: 'project-task-api' },
+  defaultMeta: { service: env.LOGGER_SERVICE_NAME },
   transports: [
-    new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
-    new winston.transports.File({ filename: 'logs/combined.log' }),
+    new winston.transports.File({ filename: env.LOGGER_ERROR_PATH, level: 'error' }),
+    new winston.transports.File({ filename: env.LOGGER_COMBINED_PATH }),
   ],
 });
 

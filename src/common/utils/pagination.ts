@@ -1,3 +1,5 @@
+import { env } from '../../config/env';
+
 export interface PaginationQuery {
   page?: number;
   limit?: number;
@@ -30,7 +32,7 @@ export const getPagination = (
   allowedColumns: string[] = [],
 ): PaginationResult => {
   const page = Math.max(1, query.page || 1);
-  const limit = Math.min(100, Math.max(1, query.limit || 10));
+  const limit = Math.min(env.MAX_PAGE_LIMIT, Math.max(1, query.limit || env.DEFAULT_PAGE_LIMIT));
   const skip = (page - 1) * limit;
 
   const whitelist = allowedColumns.length > 0

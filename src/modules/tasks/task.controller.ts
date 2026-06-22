@@ -2,13 +2,14 @@ import { Request, Response } from 'express';
 import { ITaskService } from './task.interface';
 import { sendSuccess, sendPaginated } from '../../common/utils/response';
 import { TaskQueryParams } from './task.types';
+import { UserRole } from '../users/user.entity';
 
 export class TaskController {
   constructor(private taskService: ITaskService) {}
 
   create = async (req: Request, res: Response): Promise<void> => {
     const userId = req.user?.userId;
-    const isAdmin = req.user?.role === 'admin';
+    const isAdmin = req.user?.role === UserRole.ADMIN;
     if (!userId) {
       throw new Error('User not authenticated');
     }
@@ -19,7 +20,7 @@ export class TaskController {
 
   findByProject = async (req: Request, res: Response): Promise<void> => {
     const userId = req.user?.userId;
-    const isAdmin = req.user?.role === 'admin';
+    const isAdmin = req.user?.role === UserRole.ADMIN;
     if (!userId) {
       throw new Error('User not authenticated');
     }
@@ -35,7 +36,7 @@ export class TaskController {
 
   findAll = async (req: Request, res: Response): Promise<void> => {
     const userId = req.user?.userId;
-    const isAdmin = req.user?.role === 'admin';
+    const isAdmin = req.user?.role === UserRole.ADMIN;
     if (!userId) {
       throw new Error('User not authenticated');
     }

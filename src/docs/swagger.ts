@@ -1,17 +1,18 @@
 import swaggerJsdoc from 'swagger-jsdoc';
 import { env } from '../config/env';
+import pkg from '../../../package.json';
 
 const options: swaggerJsdoc.Options = {
   definition: {
     openapi: '3.0.0',
     info: {
       title: 'Project & Task Management API',
-      version: '1.0.0',
+      version: pkg.version,
       description: 'A secure RESTful API for managing projects and tasks',
     },
     servers: [
       {
-        url: `http://localhost:${env.PORT}`,
+        url: `${env.APP_URL}:${env.PORT}`,
         description: 'Development server',
       },
     ],

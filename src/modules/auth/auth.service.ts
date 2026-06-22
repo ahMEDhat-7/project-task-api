@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import { AppDataSource } from '../../config/data-source';
+import { env } from '../../config/env';
 import { User } from '../users/user.entity';
 import { IUserRepository } from '../users/user.repository';
 import { RegisterInput, LoginInput, AuthResponse } from './auth.types';
@@ -19,7 +20,7 @@ export class AuthService implements IAuthService {
       throw new BadRequestError('Email already exists');
     }
 
-    const hashedPassword = await bcrypt.hash(input.password, 10);
+    const hashedPassword = await bcrypt.hash(input.password, env.BCRYPT_SALT_ROUNDS);
 
     const user = this.userRepository.create({
       name: input.name,

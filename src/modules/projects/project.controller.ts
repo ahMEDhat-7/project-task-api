@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { IProjectService } from './project.interface';
 import { sendSuccess, sendPaginated } from '../../common/utils/response';
 import { ProjectQueryParams } from './project.types';
+import { UserRole } from '../users/user.entity';
 
 export class ProjectController {
   constructor(private projectService: IProjectService) {}
@@ -17,7 +18,7 @@ export class ProjectController {
 
   findAll = async (req: Request, res: Response): Promise<void> => {
     const userId = req.user?.userId;
-    const isAdmin = req.user?.role === 'admin';
+    const isAdmin = req.user?.role === UserRole.ADMIN;
     if (!userId) {
       throw new Error('User not authenticated');
     }
@@ -27,7 +28,7 @@ export class ProjectController {
 
   findById = async (req: Request, res: Response): Promise<void> => {
     const userId = req.user?.userId;
-    const isAdmin = req.user?.role === 'admin';
+    const isAdmin = req.user?.role === UserRole.ADMIN;
     if (!userId) {
       throw new Error('User not authenticated');
     }
@@ -37,7 +38,7 @@ export class ProjectController {
 
   update = async (req: Request, res: Response): Promise<void> => {
     const userId = req.user?.userId;
-    const isAdmin = req.user?.role === 'admin';
+    const isAdmin = req.user?.role === UserRole.ADMIN;
     if (!userId) {
       throw new Error('User not authenticated');
     }
@@ -47,7 +48,7 @@ export class ProjectController {
 
   delete = async (req: Request, res: Response): Promise<void> => {
     const userId = req.user?.userId;
-    const isAdmin = req.user?.role === 'admin';
+    const isAdmin = req.user?.role === UserRole.ADMIN;
     if (!userId) {
       throw new Error('User not authenticated');
     }

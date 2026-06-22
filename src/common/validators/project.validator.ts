@@ -1,13 +1,14 @@
 import { z } from 'zod';
+import { MAX_TITLE_LENGTH } from '../constants/validation';
 
 export const createProjectSchema = z.object({
-  title: z.string().min(1, 'Title is required').max(255),
+  title: z.string().min(1, 'Title is required').max(MAX_TITLE_LENGTH),
   description: z.string().optional(),
   status: z.enum(['active', 'completed', 'archived']).optional(),
 });
 
 export const updateProjectSchema = z.object({
-  title: z.string().min(1, 'Title is required').max(255).optional(),
+  title: z.string().min(1, 'Title is required').max(MAX_TITLE_LENGTH).optional(),
   description: z.string().optional(),
   status: z.enum(['active', 'completed', 'archived']).optional(),
 });
