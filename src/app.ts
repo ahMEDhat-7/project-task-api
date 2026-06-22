@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import express from 'express';
+import express, { Express } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
@@ -9,7 +9,7 @@ import { errorHandler } from './middleware/error.middleware';
 import { swaggerSpec } from './docs/swagger';
 import { registerRoutes } from './routes';
 
-const app = express();
+const app: Express = express();
 
 app.use(helmet({ hsts: { maxAge: 31536000 } }));
 

@@ -43,18 +43,19 @@ The system provides:
 | Category               | Technology      |
 | ---------------------- | --------------- |
 | Runtime                | Node.js 24      |
-| Language               | TypeScript      |
-| Framework              | Express.js      |
-| Database               | PostgreSQL      |
+| Language               | TypeScript (strict, decorators) |
+| Framework              | Express.js 5    |
+| Database               | PostgreSQL 18   |
 | ORM                    | TypeORM         |
-| Authentication         | JWT             |
+| Authentication         | JWT (HS256, algorithm-pinned) |
 | Password Hashing       | bcrypt          |
-| Validation             | Zod             |
+| Validation             | Zod v4          |
 | Documentation          | Swagger/OpenAPI |
-| Containerization       | Docker          |
+| Containerization       | Docker (multi-stage, Alpine) |
 | Testing                | Jest            |
+| Linting                | ESLint v9 (flat config) |
 | Logging                | Winston         |
-| Environment Management | dotenv          |
+| Environment Management | dotenv + Zod    |
 
 ---
 
@@ -105,6 +106,7 @@ Validation:
 
 - email unique
 - password min 8 chars
+- password must contain uppercase, lowercase, digit, and special character
 
 ---
 
@@ -261,12 +263,20 @@ Query Parameters:
 
 ## Security
 
-- JWT authentication
-- bcrypt password hashing
-- Helmet
-- CORS protection
-- Rate limiting
-- Input validation
+- JWT authentication with HS256 algorithm pinning
+- bcrypt password hashing (configurable salt rounds)
+- Helmet with HSTS (max-age: 1 year)
+- CORS protection (configurable allowed origins)
+- Rate limiting (global + auth-specific: 5 attempts/15min)
+- Body size limit (10KB max)
+- Input validation with Zod `.strict()` schemas
+- SQL injection prevention (whitelist-based ORDER BY)
+- Mass assignment prevention (explicit field whitelists)
+- IDOR prevention (ownership verification on resource access)
+- Generic error messages in production
+- Auth event logging (login success/failure, registration, token errors)
+- Swagger UI disabled in production
+- Secrets via env_file, not hardcoded in Docker Compose
 
 ---
 
@@ -314,6 +324,7 @@ Query Parameters:
 | ownerId     | UUID      |
 | createdAt   | timestamp |
 | updatedAt   | timestamp |
+| deletedAt   | timestamp |
 
 Relationship:
 
@@ -413,14 +424,19 @@ src/
 │   └── seeds/
 ├── modules/
 │   ├── auth/
+│   │   └── __tests__/
 │   ├── users/
 │   ├── projects/
+│   │   └── __tests__/
 │   └── tasks/
+│       └── __tests__/
 ├── middleware/
 ├── common/
+│   ├── constants/
 │   ├── errors/
 │   ├── validators/
 │   └── utils/
 ├── docs/
+├── routes/
 ├── app.ts
 └── server.ts

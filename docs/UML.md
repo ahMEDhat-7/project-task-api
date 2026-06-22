@@ -268,6 +268,24 @@ classDiagram
         +JWT_SECRET: string
         +JWT_EXPIRES_IN: string
         +NODE_ENV: string
+        +CORS_ORIGINS: string
+        +RATE_LIMIT_WINDOW_MS: number
+        +RATE_LIMIT_MAX: number
+        +BCRYPT_SALT_ROUNDS: number
+        +API_PREFIX: string
+        +DOCS_PATH: string
+        +HEALTH_PATH: string
+        +APP_HOST: string
+        +APP_URL: string
+        +LOGGER_ERROR_PATH: string
+        +LOGGER_COMBINED_PATH: string
+        +LOGGER_SERVICE_NAME: string
+        +SEED_ADMIN_EMAIL: string
+        +SEED_ADMIN_PASSWORD: string
+        +SEED_USER_EMAIL: string
+        +SEED_USER_PASSWORD: string
+        +DEFAULT_PAGE_LIMIT: number
+        +MAX_PAGE_LIMIT: number
     }
 
     class AppDataSource {
@@ -296,30 +314,36 @@ block-beta
 
     block:common:1
         columns 1
-        C["common/errors/\nAppError, BadRequestError,\nUnauthorizedError, ForbiddenError,\nNotFoundError"]
-        D["common/utils/\nasyncWrapper, jwt, response,\npagination, logger"]
-        E["common/validators/\nauth, project, task"]
+        C["common/constants/\nMAX_NAME_LENGTH, MAX_TITLE_LENGTH,\nMIN_PASSWORD_LENGTH, PASSWORD_REGEX"]
+        D["common/errors/\nAppError, BadRequestError,\nUnauthorizedError, ForbiddenError,\nNotFoundError"]
+        E["common/utils/\nasyncWrapper, jwt, response,\npagination, logger"]
+        F["common/validators/\nauth, project, task"]
     end
 
     block:middleware:1
         columns 1
-        F["middleware/\nauth.middleware\nerror.middleware\nvalidate.middleware\nauthorize.middleware"]
+        G["middleware/\nauth.middleware\nauthorize.middleware\nerror.middleware\nvalidate.middleware"]
     end
 
     block:modules:1
         columns 3
-        G["modules/auth/"] H["modules/projects/"] I["modules/tasks/"]
+        H["modules/auth/"] I["modules/projects/"] J["modules/tasks/"]
     end
 
     block:database:1
         columns 1
-        J["database/migrations/"]
-        K["database/seeds/"]
+        K["database/migrations/"]
+        L["database/seeds/"]
     end
 
     block:docs:1
         columns 1
-        L["docs/\nUML.md\nPRD.md\ntasks.md"]
+        M["docs/\nUML.md\nPRD.md\ntasks.md"]
+    end
+
+    block:routes:1
+        columns 1
+        N["routes/\nindex.ts\n(route registry)"]
     end
 
     style config fill:#e1f5fe

@@ -55,27 +55,74 @@ Create folder structure
 
 src/
 
-- config
-- modules
-- middleware
-- routes
-- utils
-- docs
-- database
+- config (env.ts, data-source.ts)
+- modules (auth, users, projects, tasks - each with __tests__)
+- middleware (auth, authorize, error, validate)
+- common/errors (AppError, BadRequest, Unauthorized, Forbidden, NotFound)
+- common/validators (auth, project, task)
+- common/constants (validation.ts)
+- common/utils (asyncWrapper, jwt, response, pagination, logger)
+- routes (index.ts - central registry)
+- docs (swagger.ts)
+- database/migrations
+- database/seeds
 
 ---
 
 ### Task 2.2
 
-Configure environment variables
+Configure environment variables (27 total, validated with Zod)
 
-- PORT
+Database:
+
 - DB_HOST
 - DB_PORT
 - DB_USER
 - DB_PASSWORD
 - DB_NAME
-- JWT_SECRET
+
+Auth:
+
+- JWT_SECRET (min 32 chars)
+- JWT_EXPIRES_IN
+- BCRYPT_SALT_ROUNDS
+
+Server:
+
+- PORT
+- NODE_ENV
+- APP_HOST
+- APP_URL
+
+Network:
+
+- CORS_ORIGINS
+- RATE_LIMIT_WINDOW_MS
+- RATE_LIMIT_MAX
+
+Paths:
+
+- API_PREFIX
+- DOCS_PATH
+- HEALTH_PATH
+
+Logging:
+
+- LOGGER_ERROR_PATH
+- LOGGER_COMBINED_PATH
+- LOGGER_SERVICE_NAME
+
+Seed:
+
+- SEED_ADMIN_EMAIL
+- SEED_ADMIN_PASSWORD
+- SEED_USER_EMAIL
+- SEED_USER_PASSWORD
+
+Pagination:
+
+- DEFAULT_PAGE_LIMIT
+- MAX_PAGE_LIMIT
 
 ---
 
@@ -177,8 +224,9 @@ POST /auth/login
 
 JWT Middleware
 
-- Verify token
-- Attach user
+- Verify token (HS256 algorithm-pinned)
+- Attach user payload to request
+- Log token errors (expired, invalid)
 
 ---
 
@@ -187,6 +235,15 @@ JWT Middleware
 Profile Endpoint
 
 GET /auth/me
+
+---
+
+### Task 4.5
+
+Authorize Middleware
+
+- Role-based access control
+- Used on project/task routes
 
 ---
 
@@ -477,12 +534,14 @@ Create .env.example
 ## Definition of Done
 
 - All endpoints functional
-- JWT authentication implemented
-- PostgreSQL integrated
+- JWT authentication with HS256 algorithm pinning
+- PostgreSQL 18 integrated
 - TypeORM migrations working
-- Swagger available
-- Docker working
-- Tests passing
-- Lint passing
-- README completed
+- Swagger available (disabled in production)
+- Docker working (env_file, no hardcoded secrets)
+- Unit tests passing (16 tests)
+- Lint passing (ESLint v9, no-explicit-any: error)
+- No hardcoded data (all config via env vars)
+- Security hardening complete (IDOR prevention, mass assignment protection, rate limiting, HSTS)
+- README completed with full API docs
 - Production-ready folder structure

@@ -2,10 +2,12 @@ import jwt from 'jsonwebtoken';
 import { env } from '../../config/env';
 import { JwtPayload } from '../../modules/auth/auth.types';
 
+type JwtTimeString = `${number}${'s' | 'm' | 'h' | 'd' | 'w' | 'M' | 'Y'}`;
+
 export class JwtUtil {
   generateToken(payload: JwtPayload): string {
     return jwt.sign(payload, env.JWT_SECRET, {
-      expiresIn: env.JWT_EXPIRES_IN as `${number}d`,
+      expiresIn: env.JWT_EXPIRES_IN as JwtTimeString,
       algorithm: 'HS256',
     });
   }

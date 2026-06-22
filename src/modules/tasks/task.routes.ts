@@ -5,7 +5,7 @@ import { validate } from '../../middleware/validate.middleware';
 import { createTaskSchema, updateTaskSchema } from '../../common/validators/task.validator';
 import { asyncWrapper } from '../../common/utils/asyncWrapper';
 
-const router = Router();
+const router: Router = Router();
 
 router.use(authenticate);
 
@@ -15,6 +15,7 @@ router.use(authenticate);
  *   get:
  *     tags: [Tasks]
  *     summary: Get all tasks with filtering
+ *     description: Admin users can see all tasks. Regular users see only tasks in their projects.
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -22,10 +23,25 @@ router.use(authenticate);
  *         name: page
  *         schema:
  *           type: integer
+ *           default: 1
  *       - in: query
  *         name: limit
  *         schema:
  *           type: integer
+ *           default: 10
+ *           maximum: 100
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum: [id, title, status, priority, dueDate, createdAt, updatedAt]
+ *           default: createdAt
+ *       - in: query
+ *         name: order
+ *         schema:
+ *           type: string
+ *           enum: [ASC, DESC]
+ *           default: DESC
  *       - in: query
  *         name: status
  *         schema:
@@ -41,9 +57,30 @@ router.use(authenticate);
  *         schema:
  *           type: string
  *           format: date
+ *         description: Filter tasks by due date
  *     responses:
  *       200:
- *         description: List of tasks
+ *         description: Paginated list of tasks
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Task'
+ *                 pagination:
+ *                   $ref: '#/components/schemas/PaginationMeta'
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.get('/tasks', asyncWrapper(taskController.findAll));
 
@@ -53,6 +90,7 @@ router.get('/tasks', asyncWrapper(taskController.findAll));
  *   get:
  *     tags: [Tasks]
  *     summary: Get task by ID
+ *     description: Non-admin users can only access tasks in their projects.
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -65,8 +103,34 @@ router.get('/tasks', asyncWrapper(taskController.findAll));
  *     responses:
  *       200:
  *         description: Task details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   $ref: '#/components/schemas/Task'
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       403:
+ *         description: Access denied - not project owner
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  *       404:
  *         description: Task not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.get('/tasks/:id', asyncWrapper(taskController.findById));
 
@@ -76,6 +140,7 @@ router.get('/tasks/:id', asyncWrapper(taskController.findById));
  *   put:
  *     tags: [Tasks]
  *     summary: Update task
+ *     description: Non-admin users can only update tasks in their projects.
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -94,8 +159,11 @@ router.get('/tasks/:id', asyncWrapper(taskController.findById));
  *             properties:
  *               title:
  *                 type: string
+ *                 minLength: 1
+ *                 maxLength: 255
  *               description:
  *                 type: string
+ *                 maxLength: 1000
  *               status:
  *                 type: string
  *                 enum: [pending, in_progress, done]
@@ -108,8 +176,34 @@ router.get('/tasks/:id', asyncWrapper(taskController.findById));
  *     responses:
  *       200:
  *         description: Task updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   $ref: '#/components/schemas/Task'
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       403:
+ *         description: Access denied - not project owner
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  *       404:
  *         description: Task not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.put('/tasks/:id', validate(updateTaskSchema), asyncWrapper(taskController.update));
 
@@ -119,6 +213,7 @@ router.put('/tasks/:id', validate(updateTaskSchema), asyncWrapper(taskController
  *   delete:
  *     tags: [Tasks]
  *     summary: Delete task
+ *     description: Non-admin users can only delete tasks in their projects.
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -131,8 +226,38 @@ router.put('/tasks/:id', validate(updateTaskSchema), asyncWrapper(taskController
  *     responses:
  *       200:
  *         description: Task deleted
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     message:
+ *                       type: string
+ *                       example: Task deleted successfully
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       403:
+ *         description: Access denied - not project owner
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  *       404:
  *         description: Task not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.delete('/tasks/:id', asyncWrapper(taskController.delete));
 
@@ -142,6 +267,7 @@ router.delete('/tasks/:id', asyncWrapper(taskController.delete));
  *   post:
  *     tags: [Tasks]
  *     summary: Create a task in project
+ *     description: Non-admin users can only create tasks in their own projects.
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -161,8 +287,11 @@ router.delete('/tasks/:id', asyncWrapper(taskController.delete));
  *             properties:
  *               title:
  *                 type: string
+ *                 minLength: 1
+ *                 maxLength: 255
  *               description:
  *                 type: string
+ *                 maxLength: 1000
  *               status:
  *                 type: string
  *                 enum: [pending, in_progress, done]
@@ -175,8 +304,34 @@ router.delete('/tasks/:id', asyncWrapper(taskController.delete));
  *     responses:
  *       201:
  *         description: Task created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   $ref: '#/components/schemas/Task'
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       403:
+ *         description: Access denied - not project owner
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  *       404:
  *         description: Project not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.post('/projects/:projectId/tasks', validate(createTaskSchema), asyncWrapper(taskController.create));
 
@@ -186,6 +341,7 @@ router.post('/projects/:projectId/tasks', validate(createTaskSchema), asyncWrapp
  *   get:
  *     tags: [Tasks]
  *     summary: Get tasks by project
+ *     description: Non-admin users can only see tasks in their own projects.
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -199,10 +355,25 @@ router.post('/projects/:projectId/tasks', validate(createTaskSchema), asyncWrapp
  *         name: page
  *         schema:
  *           type: integer
+ *           default: 1
  *       - in: query
  *         name: limit
  *         schema:
  *           type: integer
+ *           default: 10
+ *           maximum: 100
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum: [id, title, status, priority, dueDate, createdAt, updatedAt]
+ *           default: createdAt
+ *       - in: query
+ *         name: order
+ *         schema:
+ *           type: string
+ *           enum: [ASC, DESC]
+ *           default: DESC
  *       - in: query
  *         name: status
  *         schema:
@@ -215,9 +386,39 @@ router.post('/projects/:projectId/tasks', validate(createTaskSchema), asyncWrapp
  *           enum: [low, medium, high]
  *     responses:
  *       200:
- *         description: List of tasks in project
+ *         description: Paginated list of tasks in project
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Task'
+ *                 pagination:
+ *                   $ref: '#/components/schemas/PaginationMeta'
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       403:
+ *         description: Access denied - not project owner
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  *       404:
  *         description: Project not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.get('/projects/:projectId/tasks', asyncWrapper(taskController.findByProject));
 
