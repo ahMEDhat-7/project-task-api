@@ -61,7 +61,12 @@ export class ProjectService implements IProjectService {
   async update(id: string, input: UpdateProjectInput, userId: string, isAdmin: boolean): Promise<Project> {
     const project = await this.findById(id, userId, isAdmin);
 
-    Object.assign(project, input);
+    const allowedFields = ['title', 'description', 'status'] as const;
+    for (const field of allowedFields) {
+      if (field in input) {
+        (project as unknown as Record<string, unknown>)[field] = (input as Record<string, unknown>)[field];
+      }
+    }
 
     return this.projectRepository.save(project);
   }

@@ -63,7 +63,7 @@ describe('AuthService', () => {
       const input = { name: 'Test User', email: 'existing@example.com', password: 'password123' };
       mockUserRepository.findOne.mockResolvedValue({ id: 'existing-user' } as User);
 
-      await expect(authService.register(input)).rejects.toThrow('Email already exists');
+      await expect(authService.register(input)).rejects.toThrow('If this email is not registered, you will receive a confirmation');
     });
   });
 

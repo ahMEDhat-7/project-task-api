@@ -11,9 +11,14 @@ import { registerRoutes } from './routes';
 
 const app = express();
 
-app.use(helmet());
+app.use(helmet({ hsts: { maxAge: 31536000 } }));
 
-app.use(cors());
+app.use(cors({
+  origin: env.CORS_ORIGINS.split(',').map((o) => o.trim()),
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 
 const limiter = rateLimit({
   windowMs: env.RATE_LIMIT_WINDOW_MS,
@@ -22,10 +27,19 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+const authLimiter = rateLimit({
+  windowMs: env.RATE_LIMIT_WINDOW_MS,
+  max: 5,
+  message: 'Too many authentication attempts, please try again later.',
+});
+app.use(`${env.API_PREFIX}/auth`, authLimiter);
 
-app.use(env.DOCS_PATH, swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use(express.json({ limit: '10kb' }));
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+
+if (env.NODE_ENV !== 'production') {
+  app.use(env.DOCS_PATH, swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+}
 
 registerRoutes(app);
 

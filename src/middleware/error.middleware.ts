@@ -5,7 +5,6 @@ import { QueryFailedError } from 'typeorm';
 import { AppError } from '../common/errors';
 import { sendError } from '../common/utils/response';
 import { logger } from '../common/utils/logger';
-import { env } from '../config/env';
 
 interface PgDriverError {
   code: string;
@@ -31,11 +30,13 @@ export const errorHandler = (err: Error, _req: Request, res: Response, _next: Ne
   }
 
   if (err instanceof jwt.TokenExpiredError) {
+    logger.warn('Token expired', { error: err.message });
     sendError(res, 'Token expired', 401);
     return;
   }
 
   if (err instanceof jwt.JsonWebTokenError) {
+    logger.warn('Invalid token', { error: err.message });
     sendError(res, 'Invalid token', 401);
     return;
   }
@@ -44,12 +45,13 @@ export const errorHandler = (err: Error, _req: Request, res: Response, _next: Ne
     const driverError = err.driverError as PgDriverError;
 
     if (driverError.code === PG_UNIQUE_VIOLATION) {
-      const detail = driverError.detail || 'Unique constraint violation';
-      sendError(res, detail, 409);
+      logger.warn('Unique constraint violation', { detail: driverError.detail });
+      sendError(res, 'Resource already exists', 409);
       return;
     }
 
     if (driverError.code === PG_FOREIGN_KEY_VIOLATION) {
+      logger.warn('Foreign key violation', { detail: driverError.detail });
       sendError(res, 'Referenced record not found', 400);
       return;
     }
@@ -66,6 +68,5 @@ export const errorHandler = (err: Error, _req: Request, res: Response, _next: Ne
 
   logger.error('Unexpected error:', err);
 
-  const message = env.NODE_ENV === 'production' ? 'Internal server error' : err.message;
-  sendError(res, message, 500);
+  sendError(res, 'Internal server error', 500);
 };

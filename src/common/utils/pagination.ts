@@ -4,7 +4,7 @@ export interface PaginationQuery {
   page?: number;
   limit?: number;
   sortBy?: string;
-  order?: 'ASC' | 'DESC';
+  order?: string;
 }
 
 export interface PaginationResult {
@@ -27,6 +27,8 @@ const ALLOWED_SORT_COLUMNS = new Set([
   'dueDate',
 ]);
 
+const ALLOWED_SORT_ORDERS = new Set(['ASC', 'DESC']);
+
 export const getPagination = (
   query: PaginationQuery,
   allowedColumns: string[] = [],
@@ -40,7 +42,8 @@ export const getPagination = (
     : ALLOWED_SORT_COLUMNS;
 
   const sortBy = whitelist.has(query.sortBy || '') ? (query.sortBy as string) : 'createdAt';
-  const order = (query.order?.toUpperCase() as 'ASC' | 'DESC') || 'DESC';
+  const rawOrder = query.order?.toUpperCase() || '';
+  const order: 'ASC' | 'DESC' = ALLOWED_SORT_ORDERS.has(rawOrder) ? (rawOrder as 'ASC' | 'DESC') : 'DESC';
 
   return { page, limit, skip, sortBy, order };
 };

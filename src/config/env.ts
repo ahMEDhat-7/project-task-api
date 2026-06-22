@@ -10,9 +10,11 @@ const envSchema = z.object({
   DB_USER: z.string().default('postgres'),
   DB_PASSWORD: z.string().default('postgres'),
   DB_NAME: z.string().default('project_task_db'),
-  JWT_SECRET: z.string().min(1, 'JWT_SECRET is required'),
+  JWT_SECRET: z.string().min(32, 'JWT_SECRET must be at least 32 characters'),
   JWT_EXPIRES_IN: z.string().default('7d'),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+
+  CORS_ORIGINS: z.string().default('http://localhost:3000'),
 
   RATE_LIMIT_WINDOW_MS: z.coerce.number().default(900000),
   RATE_LIMIT_MAX: z.coerce.number().default(100),

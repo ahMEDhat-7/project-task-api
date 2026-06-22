@@ -8,15 +8,11 @@ services:
     container_name: project-task-api
     ports:
       - '3000:3000'
+    env_file:
+      - .env
     environment:
-      - PORT=3000
       - DB_HOST=postgres
       - DB_PORT=5432
-      - DB_USER=postgres
-      - DB_PASSWORD=postgres
-      - DB_NAME=project_task_db
-      - JWT_SECRET=your-super-secret-jwt-key
-      - JWT_EXPIRES_IN=7d
       - NODE_ENV=production
     depends_on:
       postgres:
@@ -29,9 +25,9 @@ services:
     ports:
       - '5432:5432'
     environment:
-      - POSTGRES_DB=project_task_db
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=${DB_NAME:-project_task_db}
+      - POSTGRES_USER=${DB_USER:-postgres}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-postgres}
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:

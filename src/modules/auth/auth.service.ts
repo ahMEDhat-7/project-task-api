@@ -7,6 +7,7 @@ import { RegisterInput, LoginInput, AuthResponse } from './auth.types';
 import { IAuthService } from './auth.interface';
 import { jwtUtil } from '../../common/utils/jwt';
 import { BadRequestError, UnauthorizedError, NotFoundError } from '../../common/errors';
+import { logger } from '../../common/utils/logger';
 
 export class AuthService implements IAuthService {
   constructor(private userRepository: IUserRepository) {}
@@ -17,7 +18,8 @@ export class AuthService implements IAuthService {
     });
 
     if (existingUser) {
-      throw new BadRequestError('Email already exists');
+      logger.warn('Registration attempt with existing email', { email: input.email });
+      throw new BadRequestError('If this email is not registered, you will receive a confirmation');
     }
 
     const hashedPassword = await bcrypt.hash(input.password, env.BCRYPT_SALT_ROUNDS);
@@ -36,6 +38,8 @@ export class AuthService implements IAuthService {
       role: savedUser.role,
     });
 
+    logger.info('User registered successfully', { userId: savedUser.id, email: savedUser.email });
+
     const { password: _, ...userWithoutPassword } = savedUser as User & { password: string };
 
     return { user: userWithoutPassword as Omit<User, 'password'>, token };
@@ -49,12 +53,14 @@ export class AuthService implements IAuthService {
       .getOne();
 
     if (!user) {
+      logger.warn('Login attempt with non-existent email', { email: input.email });
       throw new UnauthorizedError('Invalid email or password');
     }
 
     const isPasswordValid = await bcrypt.compare(input.password, user.password);
 
     if (!isPasswordValid) {
+      logger.warn('Login attempt with invalid password', { email: input.email, userId: user.id });
       throw new UnauthorizedError('Invalid email or password');
     }
 
@@ -64,6 +70,8 @@ export class AuthService implements IAuthService {
       role: user.role,
     });
 
+    logger.info('User logged in successfully', { userId: user.id, email: user.email });
+
     const { password: _, ...userWithoutPassword } = user;
 
     return { user: userWithoutPassword as Omit<User, 'password'>, token };
@@ -72,6 +80,7 @@ export class AuthService implements IAuthService {
   async getProfile(userId: string): Promise<Omit<User, 'password'>> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
+      select: { id: true, name: true, email: true, role: true, createdAt: true, updatedAt: true },
     });
 
     if (!user) {

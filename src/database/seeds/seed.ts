@@ -95,8 +95,6 @@ const seed = async (): Promise<void> => {
   }
 
   console.log('Seed completed successfully!');
-  console.log(`Admin: ${env.SEED_ADMIN_EMAIL} / ${env.SEED_ADMIN_PASSWORD}`);
-  console.log(`User: ${env.SEED_USER_EMAIL} / ${env.SEED_USER_PASSWORD}`);
 
   await AppDataSource.destroy();
 };

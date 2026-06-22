@@ -9,13 +9,13 @@ export interface ITaskService {
     page: number;
     limit: number;
   }>;
-  findById(id: string): Promise<Task>;
+  findById(id: string, userId: string, isAdmin: boolean): Promise<Task>;
   findAll(query: TaskQueryParams, userId: string, isAdmin: boolean): Promise<{
     data: Task[];
     total: number;
     page: number;
     limit: number;
   }>;
-  update(id: string, input: UpdateTaskInput): Promise<Task>;
-  delete(id: string): Promise<void>;
+  update(id: string, input: UpdateTaskInput, userId: string, isAdmin: boolean): Promise<Task>;
+  delete(id: string, userId: string, isAdmin: boolean): Promise<void>;
 }

@@ -3,6 +3,7 @@ import { IProjectService } from './project.interface';
 import { sendSuccess, sendPaginated } from '../../common/utils/response';
 import { ProjectQueryParams } from './project.types';
 import { UserRole } from '../users/user.entity';
+import { UnauthorizedError } from '../../common/errors';
 
 export class ProjectController {
   constructor(private projectService: IProjectService) {}
@@ -10,7 +11,7 @@ export class ProjectController {
   create = async (req: Request, res: Response): Promise<void> => {
     const userId = req.user?.userId;
     if (!userId) {
-      throw new Error('User not authenticated');
+      throw new UnauthorizedError('User not authenticated');
     }
     const project = await this.projectService.create(req.body, userId);
     sendSuccess(res, project, 201);
@@ -20,7 +21,7 @@ export class ProjectController {
     const userId = req.user?.userId;
     const isAdmin = req.user?.role === UserRole.ADMIN;
     if (!userId) {
-      throw new Error('User not authenticated');
+      throw new UnauthorizedError('User not authenticated');
     }
     const result = await this.projectService.findAll(req.query as ProjectQueryParams, userId, isAdmin);
     sendPaginated(res, result.data, result.page, result.limit, result.total);
@@ -30,7 +31,7 @@ export class ProjectController {
     const userId = req.user?.userId;
     const isAdmin = req.user?.role === UserRole.ADMIN;
     if (!userId) {
-      throw new Error('User not authenticated');
+      throw new UnauthorizedError('User not authenticated');
     }
     const project = await this.projectService.findById(req.params.id, userId, isAdmin);
     sendSuccess(res, project);
@@ -40,7 +41,7 @@ export class ProjectController {
     const userId = req.user?.userId;
     const isAdmin = req.user?.role === UserRole.ADMIN;
     if (!userId) {
-      throw new Error('User not authenticated');
+      throw new UnauthorizedError('User not authenticated');
     }
     const project = await this.projectService.update(req.params.id, req.body, userId, isAdmin);
     sendSuccess(res, project);
@@ -50,7 +51,7 @@ export class ProjectController {
     const userId = req.user?.userId;
     const isAdmin = req.user?.role === UserRole.ADMIN;
     if (!userId) {
-      throw new Error('User not authenticated');
+      throw new UnauthorizedError('User not authenticated');
     }
     await this.projectService.delete(req.params.id, userId, isAdmin);
     sendSuccess(res, { message: 'Project deleted successfully' });

@@ -80,13 +80,21 @@ export class TaskService implements ITaskService {
     return { data, total, page, limit };
   }
 
-  async findById(id: string): Promise<Task> {
+  async findById(id: string, userId: string, isAdmin: boolean): Promise<Task> {
     const task = await this.taskRepository.findOne({
       where: { id },
     });
 
     if (!task) {
       throw new NotFoundError('Task not found');
+    }
+
+    const project = await this.projectRepository.findOne({
+      where: { id: task.projectId },
+    });
+
+    if (project && !isAdmin && project.ownerId !== userId) {
+      throw new ForbiddenError('Access denied');
     }
 
     return task;
@@ -124,17 +132,21 @@ export class TaskService implements ITaskService {
     return { data, total, page, limit };
   }
 
-  async update(id: string, input: UpdateTaskInput): Promise<Task> {
-    const task = await this.findById(id);
+  async update(id: string, input: UpdateTaskInput, userId: string, isAdmin: boolean): Promise<Task> {
+    const task = await this.findById(id, userId, isAdmin);
 
-    Object.assign(task, input);
+    const allowedFields = ['title', 'description', 'status', 'priority', 'dueDate'] as const;
+    for (const field of allowedFields) {
+      if (field in input) {
+        (task as unknown as Record<string, unknown>)[field] = (input as Record<string, unknown>)[field];
+      }
+    }
 
     return this.taskRepository.save(task);
   }
 
-  async delete(id: string): Promise<void> {
-    const task = await this.findById(id);
-
+  async delete(id: string, userId: string, isAdmin: boolean): Promise<void> {
+    const task = await this.findById(id, userId, isAdmin);
     await this.taskRepository.remove(task);
   }
 }

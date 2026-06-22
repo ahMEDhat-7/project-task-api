@@ -6,11 +6,12 @@ export class JwtUtil {
   generateToken(payload: JwtPayload): string {
     return jwt.sign(payload, env.JWT_SECRET, {
       expiresIn: env.JWT_EXPIRES_IN as `${number}d`,
+      algorithm: 'HS256',
     });
   }
 
   verifyToken(token: string): JwtPayload {
-    return jwt.verify(token, env.JWT_SECRET) as JwtPayload;
+    return jwt.verify(token, env.JWT_SECRET, { algorithms: ['HS256'] }) as JwtPayload;
   }
 }
 
