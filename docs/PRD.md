@@ -288,6 +288,26 @@ Query Parameters:
 
 ---
 
+## Database Migration Strategy
+
+### Development
+- TypeORM `synchronize: true` automatically syncs entity changes to the database
+- No manual migration step required during development
+
+### Production
+- TypeORM `migrationsRun: true` automatically runs pending migrations on server startup
+- Migrations are generated using `typeorm migration:generate`
+- Initial migration created from clean database schema
+
+### Migration Workflow
+1. Make entity changes
+2. Build project: `pnpm build`
+3. Generate migration: `pnpm migration:generate src/database/migrations/DescriptiveName`
+4. Commit migration file to version control
+5. Deploy — migrations run automatically on startup
+
+---
+
 ## Maintainability
 
 - Layered architecture
@@ -408,7 +428,7 @@ Minimum 80%
 - Swagger documentation
 - README.md
 - .env.example
-- Database migrations
+- Database migrations (TypeORM auto-run in production)
 - Seed scripts
 - Test suite
 

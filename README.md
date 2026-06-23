@@ -99,9 +99,57 @@ Returns:
 | `pnpm lint:fix` | Fix linting errors |
 | `pnpm format` | Format code with Prettier |
 | `pnpm seed` | Seed database with sample data |
-| `pnpm migration:generate` | Generate migration |
+| `pnpm migration:generate <path>` | Generate migration from entity changes |
 | `pnpm migration:run` | Run pending migrations |
 | `pnpm migration:revert` | Revert last migration |
+
+## Database Migrations
+
+### Development
+In development, TypeORM automatically syncs your entity changes to the database using `synchronize: true`. No manual migration step required.
+
+### Generating Migrations
+When you make entity changes and want to persist them as a migration:
+
+1. Build the project:
+```bash
+pnpm build
+```
+
+2. Generate the migration (requires a clean database for initial migration):
+```bash
+pnpm migration:generate src/database/migrations/DescriptiveName
+```
+
+3. For subsequent migrations, the database should have the current schema. The migration generator creates a diff between your entities and the existing database.
+
+### Production
+In production (`NODE_ENV=production`), TypeORM automatically runs pending migrations on server startup via `migrationsRun: true`.
+
+## Production Deployment
+
+### Using Docker Compose (Recommended)
+```bash
+docker compose up -d
+```
+
+This starts both the API server and PostgreSQL with migrations auto-applied.
+
+### Manual Deployment
+```bash
+# Build the project
+pnpm build
+
+# Start production server (migrations run automatically)
+NODE_ENV=production pnpm start
+```
+
+### Environment Variables
+Ensure the following are set in production:
+- `NODE_ENV=production`
+- `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`
+- `JWT_SECRET` (minimum 32 characters)
+- `CORS_ORIGINS` (comma-separated allowed origins)
 
 ## API Endpoints
 

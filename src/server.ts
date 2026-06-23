@@ -1,38 +1,10 @@
-import pg from 'pg';
 import { app } from './app';
 import { env } from './config/env';
 import { AppDataSource } from './config/data-source';
 import { logger } from './common/utils/logger';
 
-const ensureDatabase = async (): Promise<void> => {
-  const client = new pg.Client({
-    host: env.DB_HOST,
-    port: env.DB_PORT,
-    user: env.DB_USER,
-    password: env.DB_PASSWORD,
-    database: 'postgres',
-  });
-
-  try {
-    await client.connect();
-
-    const result = await client.query(
-      'SELECT 1 FROM pg_database WHERE datname = $1',
-      [env.DB_NAME],
-    );
-
-    if (result.rowCount === 0) {
-      await client.query(`CREATE DATABASE "${env.DB_NAME}"`);
-      logger.info(`Database "${env.DB_NAME}" created`);
-    }
-  } finally {
-    await client.end();
-  }
-};
-
 const startServer = async (): Promise<void> => {
   try {
-    await ensureDatabase();
     await AppDataSource.initialize();
     logger.info('Database connected successfully');
 

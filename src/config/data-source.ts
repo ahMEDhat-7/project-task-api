@@ -3,7 +3,7 @@ import { DataSource } from 'typeorm';
 import { env } from './env';
 
 const isCompiled = __dirname.includes('dist');
-const sourceDir = isCompiled ? '../..' : 'src';
+const ext = isCompiled ? 'js' : 'ts';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -12,9 +12,10 @@ export const AppDataSource = new DataSource({
   username: env.DB_USER,
   password: env.DB_PASSWORD,
   database: env.DB_NAME,
-  synchronize: false,
+  synchronize: env.NODE_ENV === 'development',
+  migrationsRun: env.NODE_ENV !== 'development',
   logging: env.NODE_ENV === 'development',
-  entities: [path.join(__dirname, sourceDir, 'modules/**/*.entity.{ts,js}')],
-  migrations: [path.join(__dirname, sourceDir, 'database/migrations/*.{ts,js}')],
+  entities: [path.join(__dirname, `../modules/**/*.entity.${ext}`)],
+  migrations: [path.join(__dirname, `../database/migrations/*.${ext}`)],
   subscribers: [],
 });

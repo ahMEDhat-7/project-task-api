@@ -7,7 +7,7 @@ describe('Auth Integration Tests', () => {
       const response = await request(app).post('/api/v1/auth/register').send({
         name: 'Test User',
         email: `test${Date.now()}@example.com`,
-        password: 'password123',
+        password: 'Password123!',
       });
 
       expect(response.status).toBe(201);
@@ -34,12 +34,12 @@ describe('Auth Integration Tests', () => {
       await request(app).post('/api/v1/auth/register').send({
         name: 'Login Test',
         email,
-        password: 'password123',
+        password: 'Password123!',
       });
 
       const response = await request(app).post('/api/v1/auth/login').send({
         email,
-        password: 'password123',
+        password: 'Password123!',
       });
 
       expect(response.status).toBe(200);
@@ -64,7 +64,7 @@ describe('Auth Integration Tests', () => {
       const registerResponse = await request(app).post('/api/v1/auth/register').send({
         name: 'Profile Test',
         email,
-        password: 'password123',
+        password: 'Password123!',
       });
 
       const token = registerResponse.body.data.token;
