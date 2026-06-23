@@ -6,34 +6,10 @@ services:
     container_name: project-task-api
     ports:
       - '3000:3000'
+    env_file: .env
     environment:
-      - PORT=3000
       - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_USER=postgres
-      - DB_PASSWORD=postgres
-      - DB_NAME=project_task_db
-      - JWT_SECRET=${JWT_SECRET}
-      - JWT_EXPIRES_IN=7d
       - NODE_ENV=production
-      - CORS_ORIGINS=http://localhost:3000
-      - RATE_LIMIT_WINDOW_MS=900000
-      - RATE_LIMIT_MAX=100
-      - BCRYPT_SALT_ROUNDS=10
-      - API_PREFIX=/api/v1
-      - DOCS_PATH=/docs
-      - HEALTH_PATH=/health
-      - APP_HOST=localhost
-      - APP_URL=http://localhost
-      - LOGGER_ERROR_PATH=logs/error.log
-      - LOGGER_COMBINED_PATH=logs/combined.log
-      - LOGGER_SERVICE_NAME=project-task-api
-      - SEED_ADMIN_EMAIL=admin@example.com
-      - SEED_ADMIN_PASSWORD=admin123
-      - SEED_USER_EMAIL=user@example.com
-      - SEED_USER_PASSWORD=user123
-      - DEFAULT_PAGE_LIMIT=10
-      - MAX_PAGE_LIMIT=100
     depends_on:
       postgres:
         condition: service_healthy
