@@ -1,6 +1,6 @@
 import { Project } from './project.entity';
 import { CreateProjectInput, UpdateProjectInput, ProjectQueryParams } from './project.types';
-import { PaginatedResult } from '../../common/utils/pagination';
+import { PaginatedResult } from '../../common/types';
 
 export interface IProjectService {
   create(input: CreateProjectInput, ownerId: string): Promise<Project>;

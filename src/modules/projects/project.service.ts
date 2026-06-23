@@ -3,7 +3,8 @@ import { Project } from './project.entity';
 import { IProjectRepository } from './project.repository';
 import { CreateProjectInput, UpdateProjectInput, ProjectQueryParams } from './project.types';
 import { IProjectService } from './project.interface';
-import { getPagination, PaginatedResult } from '../../common/utils/pagination';
+import { PaginatedResult } from '../../common/types';
+import { getPagination } from '../../common/utils/pagination';
 import { ensureProjectAccess } from './project.helpers';
 
 export class ProjectService implements IProjectService {

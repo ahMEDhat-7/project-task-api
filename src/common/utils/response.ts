@@ -1,31 +1,7 @@
 import { Response } from 'express';
+import { ValidationError, SuccessResponse, ErrorResponse, PaginatedResponse } from '../types';
 
-export interface ValidationError {
-  field?: string;
-  message: string;
-}
-
-export interface SuccessResponse<T> {
-  success: true;
-  data: T;
-}
-
-export interface ErrorResponse {
-  success: false;
-  message: string;
-  errors?: ValidationError[];
-}
-
-export interface PaginatedResponse<T> {
-  success: true;
-  data: T[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
-}
+export { ValidationError, SuccessResponse, ErrorResponse, PaginatedResponse } from '../types';
 
 export const sendSuccess = <T>(res: Response, data: T, statusCode = 200): void => {
   const response: SuccessResponse<T> = { success: true, data };

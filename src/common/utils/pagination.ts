@@ -1,26 +1,7 @@
 import { env } from '../../config/env';
+import { PaginationQuery, PaginationResult } from '../types';
 
-export interface PaginationQuery {
-  page?: number;
-  limit?: number;
-  sortBy?: string;
-  order?: string;
-}
-
-export interface PaginationResult {
-  page: number;
-  limit: number;
-  skip: number;
-  sortBy: string;
-  order: 'ASC' | 'DESC';
-}
-
-export interface PaginatedResult<T> {
-  data: T[];
-  total: number;
-  page: number;
-  limit: number;
-}
+export { PaginationQuery, PaginationResult, PaginatedResult } from '../types';
 
 const ALLOWED_SORT_COLUMNS = new Set([
   'id',

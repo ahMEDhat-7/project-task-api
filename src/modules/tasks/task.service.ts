@@ -7,7 +7,8 @@ import { IProjectRepository } from '../projects/project.repository';
 import { CreateTaskInput, UpdateTaskInput, TaskQueryParams } from './task.types';
 import { ITaskService } from './task.interface';
 import { NotFoundError } from '../../common/errors';
-import { getPagination, PaginatedResult } from '../../common/utils/pagination';
+import { PaginatedResult } from '../../common/types';
+import { getPagination } from '../../common/utils/pagination';
 import { ensureProjectAccess } from '../projects/project.helpers';
 
 export class TaskService implements ITaskService {

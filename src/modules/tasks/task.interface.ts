@@ -1,6 +1,6 @@
 import { Task } from './task.entity';
 import { CreateTaskInput, UpdateTaskInput, TaskQueryParams } from './task.types';
-import { PaginatedResult } from '../../common/utils/pagination';
+import { PaginatedResult } from '../../common/types';
 
 export interface ITaskService {
   create(input: CreateTaskInput, projectId: string, userId: string, isAdmin: boolean): Promise<Task>;

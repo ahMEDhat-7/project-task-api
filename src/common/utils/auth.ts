@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { UserRole } from '../../modules/users/user.entity';
+import { UserRole } from '../types';
 import { UnauthorizedError } from '../errors';
 
 export const getUserContext = (req: Request): { userId: string; isAdmin: boolean } => {

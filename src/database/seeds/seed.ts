@@ -1,8 +1,9 @@
 import { AppDataSource } from '../../config/data-source';
 import { env } from '../../config/env';
-import { User, UserRole } from '../../modules/users/user.entity';
-import { Project, ProjectStatus } from '../../modules/projects/project.entity';
-import { Task, TaskStatus, TaskPriority } from '../../modules/tasks/task.entity';
+import { User } from '../../modules/users/user.entity';
+import { UserRole, ProjectStatus, TaskStatus, TaskPriority } from '../../common/types';
+import { Project } from '../../modules/projects/project.entity';
+import { Task } from '../../modules/tasks/task.entity';
 import bcrypt from 'bcrypt';
 
 const seed = async (): Promise<void> => {

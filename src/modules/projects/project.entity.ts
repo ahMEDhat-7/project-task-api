@@ -11,12 +11,9 @@ import {
 } from 'typeorm';
 import { User } from '../users/user.entity';
 import { Task } from '../tasks/task.entity';
+import { ProjectStatus } from '../../common/types';
 
-export enum ProjectStatus {
-  ACTIVE = 'active',
-  COMPLETED = 'completed',
-  ARCHIVED = 'archived',
-}
+export { ProjectStatus } from '../../common/types';
 
 @Entity('projects')
 export class Project {

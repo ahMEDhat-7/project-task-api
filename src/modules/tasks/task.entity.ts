@@ -8,18 +8,9 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { Project } from '../projects/project.entity';
+import { TaskStatus, TaskPriority } from '../../common/types';
 
-export enum TaskStatus {
-  PENDING = 'pending',
-  IN_PROGRESS = 'in_progress',
-  DONE = 'done',
-}
-
-export enum TaskPriority {
-  LOW = 'low',
-  MEDIUM = 'medium',
-  HIGH = 'high',
-}
+export { TaskStatus, TaskPriority } from '../../common/types';
 
 @Entity('tasks')
 export class Task {

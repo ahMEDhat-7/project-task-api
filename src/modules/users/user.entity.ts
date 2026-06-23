@@ -7,11 +7,9 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Project } from '../projects/project.entity';
+import { UserRole } from '../../common/types';
 
-export enum UserRole {
-  MEMBER = 'member',
-  ADMIN = 'admin',
-}
+export { UserRole } from '../../common/types';
 
 @Entity('users')
 export class User {
