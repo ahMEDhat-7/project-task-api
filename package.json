@@ -17,7 +17,9 @@
     "migration:generate": "typeorm migration:generate -d dist/config/data-source.js",
     "migration:run": "typeorm migration:run -d dist/config/data-source.js",
     "migration:revert": "typeorm migration:revert -d dist/config/data-source.js",
-    "seed": "ts-node src/database/seeds/seed.ts"
+    "seed": "ts-node src/database/seeds/seed.ts",
+    "docker:dev": "docker compose up -d postgres && pnpm dev",
+    "docker:down": "docker compose down"
   },
   "repository": {
     "type": "git",
