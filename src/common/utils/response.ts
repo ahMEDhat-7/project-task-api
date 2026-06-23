@@ -43,6 +43,7 @@ export const sendPaginated = <T>(
   page: number,
   limit: number,
   total: number,
+  statusCode = 200,
 ): void => {
   const response: PaginatedResponse<T> = {
     success: true,
@@ -54,5 +55,5 @@ export const sendPaginated = <T>(
       totalPages: Math.ceil(total / limit),
     },
   };
-  res.status(200).json(response);
+  res.status(statusCode).json(response);
 };

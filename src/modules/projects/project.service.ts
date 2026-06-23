@@ -3,8 +3,8 @@ import { Project } from './project.entity';
 import { IProjectRepository } from './project.repository';
 import { CreateProjectInput, UpdateProjectInput, ProjectQueryParams } from './project.types';
 import { IProjectService } from './project.interface';
-import { NotFoundError, ForbiddenError } from '../../common/errors';
-import { getPagination } from '../../common/utils/pagination';
+import { getPagination, PaginatedResult } from '../../common/utils/pagination';
+import { ensureProjectAccess } from './project.helpers';
 
 export class ProjectService implements IProjectService {
   constructor(private projectRepository: IProjectRepository) {}
@@ -18,44 +18,32 @@ export class ProjectService implements IProjectService {
     return this.projectRepository.save(project);
   }
 
-  async findAll(query: ProjectQueryParams, userId: string, isAdmin: boolean) {
+  async findAll(query: ProjectQueryParams, userId: string, isAdmin: boolean): Promise<PaginatedResult<Project>> {
     const { page, limit, skip, sortBy, order } = getPagination(query);
 
-    const qb = this.projectRepository.createQueryBuilder('project');
+    const queryBuilder = this.projectRepository.createQueryBuilder('project');
 
     if (!isAdmin) {
-      qb.where('project.ownerId = :userId', { userId });
+      queryBuilder.where('project.ownerId = :userId', { userId });
     }
 
     if (query.search) {
-      qb.andWhere('(project.title ILIKE :search OR project.description ILIKE :search)', {
+      queryBuilder.andWhere('(project.title ILIKE :search OR project.description ILIKE :search)', {
         search: `%${query.search}%`,
       });
     }
 
-    qb.orderBy(`project.${sortBy}`, order);
-    qb.skip(skip);
-    qb.take(limit);
+    queryBuilder.orderBy(`project.${sortBy}`, order);
+    queryBuilder.skip(skip);
+    queryBuilder.take(limit);
 
-    const [data, total] = await qb.getManyAndCount();
+    const [data, total] = await queryBuilder.getManyAndCount();
 
     return { data, total, page, limit };
   }
 
   async findById(id: string, userId: string, isAdmin: boolean): Promise<Project> {
-    const project = await this.projectRepository.findOne({
-      where: { id },
-    });
-
-    if (!project) {
-      throw new NotFoundError('Project not found');
-    }
-
-    if (!isAdmin && project.ownerId !== userId) {
-      throw new ForbiddenError('Access denied');
-    }
-
-    return project;
+    return ensureProjectAccess(this.projectRepository, id, userId, isAdmin);
   }
 
   async update(id: string, input: UpdateProjectInput, userId: string, isAdmin: boolean): Promise<Project> {
@@ -64,7 +52,7 @@ export class ProjectService implements IProjectService {
     const allowedFields = ['title', 'description', 'status'] as const;
     for (const field of allowedFields) {
       if (field in input) {
-        (project as unknown as Record<string, unknown>)[field] = (input as Record<string, unknown>)[field];
+        Object.assign(project, { [field]: input[field] });
       }
     }
 

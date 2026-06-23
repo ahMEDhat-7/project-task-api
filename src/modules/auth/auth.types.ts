@@ -1,4 +1,4 @@
-import { User, UserRole } from '../users/user.entity';
+import { User } from '../users/user.entity';
 
 export interface RegisterInput {
   name: string;
@@ -16,8 +16,4 @@ export interface AuthResponse {
   token: string;
 }
 
-export interface JwtPayload {
-  userId: string;
-  email: string;
-  role: UserRole;
-}
+export { JwtPayload } from '../../common/types';

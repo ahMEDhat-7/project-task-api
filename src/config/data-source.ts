@@ -2,8 +2,8 @@ import path from 'path';
 import { DataSource } from 'typeorm';
 import { env } from './env';
 
-const isCompiled = __dirname.includes('dist');
-const ext = isCompiled ? 'js' : 'ts';
+const isProductionBuild = __dirname.includes('dist');
+const ext = isProductionBuild ? 'js' : 'ts';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -17,5 +17,4 @@ export const AppDataSource = new DataSource({
   logging: env.NODE_ENV === 'development',
   entities: [path.join(__dirname, `../modules/**/*.entity.${ext}`)],
   migrations: [path.join(__dirname, `../database/migrations/*.${ext}`)],
-  subscribers: [],
 });

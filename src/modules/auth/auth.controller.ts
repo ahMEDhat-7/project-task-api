@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { IAuthService } from './auth.interface';
 import { sendSuccess } from '../../common/utils/response';
+import { getUserContext } from '../../common/utils/auth';
 
 export class AuthController {
   constructor(private authService: IAuthService) {}
@@ -18,10 +19,7 @@ export class AuthController {
   };
 
   getProfile = async (req: Request, res: Response): Promise<void> => {
-    const userId = req.user?.userId;
-    if (!userId) {
-      throw new Error('User not authenticated');
-    }
+    const { userId } = getUserContext(req);
     const user = await this.authService.getProfile(userId);
     sendSuccess(res, user);
   };

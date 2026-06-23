@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { env } from '../../config/env';
-import { JwtPayload } from '../../modules/auth/auth.types';
+import { JwtPayload } from '../types';
 
 type JwtTimeString = `${number}${'s' | 'm' | 'h' | 'd' | 'w' | 'M' | 'Y'}`;
 

@@ -15,6 +15,13 @@ export interface PaginationResult {
   order: 'ASC' | 'DESC';
 }
 
+export interface PaginatedResult<T> {
+  data: T[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
 const ALLOWED_SORT_COLUMNS = new Set([
   'id',
   'createdAt',

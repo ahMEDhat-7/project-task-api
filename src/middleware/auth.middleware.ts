@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { env } from '../config/env';
 import { UnauthorizedError } from '../common/errors';
-import { JwtPayload } from '../modules/auth/auth.types';
+import { JwtPayload } from '../common/types';
 import { logger } from '../common/utils/logger';
 
 declare global {
