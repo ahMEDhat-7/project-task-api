@@ -53,7 +53,13 @@ The API will be available at `http://localhost:3000` (configurable via `APP_URL`
 
 ## Docker
 
-Run with Docker Compose:
+1. Set up environment variables:
+```bash
+cp .env.example .env
+# Edit .env with your database credentials and JWT secret
+```
+
+2. Run with Docker Compose:
 ```bash
 docker compose up -d
 ```
@@ -70,8 +76,6 @@ Swagger documentation is available at:
 ```
 http://localhost:3000/docs
 ```
-
-> **Note:** Swagger UI is only enabled in non-production environments.
 
 ## Health Check
 
@@ -231,7 +235,12 @@ Passwords must meet all of the following:
 
 ## Environment Variables
 
-See `.env.example` for the full list (27 variables). Key variables:
+Copy `.env.example` to `.env` and fill in your values:
+```bash
+cp .env.example .env
+```
+
+Docker reads this file automatically via `env_file` in `docker-compose.yml`.
 
 | Variable | Default | Description |
 |----------|---------|-------------|
