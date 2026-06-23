@@ -14,8 +14,10 @@ RUN pnpm build
 
 RUN pnpm prune --prod
 
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodeuser -u 1001
+RUN mkdir -p logs && \
+    addgroup -g 1001 -S nodejs && \
+    adduser -S nodeuser -u 1001 && \
+    chown -R nodeuser:nodejs /app
 
 USER nodeuser
 
