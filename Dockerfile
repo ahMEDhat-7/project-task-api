@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY package.json pnpm-lock.yaml ./
 
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN npm install -g pnpm@10.27.0
 
 RUN pnpm install --frozen-lockfile
 
@@ -18,7 +18,7 @@ WORKDIR /app
 
 COPY package.json pnpm-lock.yaml ./
 
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN npm install -g pnpm@10.27.0
 
 RUN pnpm install --prod --frozen-lockfile
 
