@@ -37,9 +37,7 @@ app.use(`${env.API_PREFIX}/auth`, authLimiter);
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
-if (env.NODE_ENV !== 'production') {
-  app.use(env.DOCS_PATH, swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-}
+app.use(env.DOCS_PATH, swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 registerRoutes(app);
 
