@@ -1,4 +1,4 @@
-FROM node:24-alpine AS builder
+FROM node:24-alpine
 
 WORKDIR /app
 
@@ -12,15 +12,7 @@ COPY . .
 
 RUN pnpm build
 
-RUN pnpm install --prod --frozen-lockfile
-
-FROM node:24-alpine AS production
-
-WORKDIR /app
-
-COPY package.json ./
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
+RUN pnpm prune --prod
 
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nodeuser -u 1001
