@@ -14,7 +14,7 @@ export const AppDataSource = new DataSource({
   database: env.DB_NAME,
   synchronize: env.NODE_ENV === 'development',
   migrationsRun: env.NODE_ENV !== 'development',
-  logging: env.NODE_ENV === 'development',
+  logging: false,
   entities: [path.join(__dirname, `../modules/**/*.entity.${ext}`)],
   migrations: [path.join(__dirname, `../database/migrations/*.${ext}`)],
 });
