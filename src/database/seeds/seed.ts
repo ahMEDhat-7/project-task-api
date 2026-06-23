@@ -15,9 +15,9 @@ const seed = async (): Promise<void> => {
   const taskRepository = AppDataSource.getRepository(Task);
 
   // Clear existing data
-  await taskRepository.delete({});
-  await projectRepository.delete({});
-  await userRepository.delete({});
+  await taskRepository.createQueryBuilder().delete().execute();
+  await projectRepository.createQueryBuilder().delete().execute();
+  await userRepository.createQueryBuilder().delete().execute();
 
   // Create admin user
   const hashedPassword = await bcrypt.hash(env.SEED_ADMIN_PASSWORD, env.BCRYPT_SALT_ROUNDS);
